@@ -303,6 +303,40 @@ app.get('/price', (req, res) => {
   res.json(currentPrice);
 });
 
+// ── NOTICIAS — proxy ForexFactory para evitar CORS ──
+let cachedNews = [];
+let lastNewsFetch = 0;
+
+app.get('/news', async (req, res) => {
+  try {
+    // Cache de 30 minutos
+    if (Date.now() - lastNewsFetch < 1800000 && cachedNews.length > 0) {
+      return res.json(cachedNews);
+    }
+    const r = await fetch('https://nfs.faireconomy.media/ff_calendar_thisweek.json');
+    if (!r.ok) throw new Error('FF error');
+    const all = await r.json();
+    const now = new Date();
+    cachedNews = all
+      .filter(ev => ev.currency === 'USD' && ev.impact === 'High' && ev.date)
+      .map(ev => ({
+        title: ev.title,
+        currency: ev.currency,
+        impact: ev.impact,
+        date: ev.date,
+        forecast: ev.forecast || '—',
+        previous: ev.previous || '—'
+      }))
+      .filter(ev => new Date(ev.date) > new Date(now - 3600000))
+      .sort((a,b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 5);
+    lastNewsFetch = Date.now();
+    res.json(cachedNews);
+  } catch(e) {
+    res.json(cachedNews.length ? cachedNews : []);
+  }
+});
+
 // ── START ──
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
