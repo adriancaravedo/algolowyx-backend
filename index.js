@@ -327,9 +327,8 @@ app.get('/news', async (req, res) => {
         forecast: ev.forecast || '—',
         previous: ev.previous || '—'
       }))
-      .filter(ev => new Date(ev.date) > new Date(now - 3600000))
-      .sort((a,b) => new Date(a.date) - new Date(b.date))
-      .slice(0, 5);
+      .filter(ev => new Date(ev.date) > new Date(Date.now() - 3600000))
+      .sort((a,b) => new Date(a.date) - new Date(b.date));
     lastNewsFetch = Date.now();
     res.json(cachedNews);
   } catch(e) {
