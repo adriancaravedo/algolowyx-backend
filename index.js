@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV !== 'production') require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
@@ -148,7 +148,7 @@ Analiza este setup según tu estrategia SMC/ICT y devuelve el JSON completo.`;
 
     // Llamar a Claude
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
       system: APEX_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userMessage }]
@@ -286,6 +286,21 @@ app.get('/health', (req, res) => {
     version: '1.0.0',
     timestamp: new Date().toISOString()
   });
+});
+
+// ── PRECIO EN TIEMPO REAL DESDE EA ──
+let currentPrice = { bid: 0, ask: 0, spread: 0, updated_at: null };
+
+app.post('/price', (req, res) => {
+  const { bid, ask, spread } = req.body;
+  if (bid) {
+    currentPrice = { bid: parseFloat(bid), ask: parseFloat(ask || bid), spread: parseFloat(spread || 0), updated_at: new Date().toISOString() };
+  }
+  res.json({ ok: true });
+});
+
+app.get('/price', (req, res) => {
+  res.json(currentPrice);
 });
 
 // ── START ──
