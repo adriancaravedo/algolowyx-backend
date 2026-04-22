@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV !== 'production') require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
@@ -341,4 +341,14 @@ app.listen(PORT, () => {
   console.log(`📡 Supabase: ${process.env.SUPABASE_URL}`);
   console.log(`🤖 Claude API: configurado`);
   console.log(`⏰ ${new Date().toISOString()}\n`);
+});
+
+// Mantener vivo ante SIGTERM de Railway
+process.on('SIGTERM', () => {
+  console.log('SIGTERM recibido — manteniéndose vivo');
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT recibido — cerrando');
+  process.exit(0);
 });
