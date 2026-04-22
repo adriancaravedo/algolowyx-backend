@@ -1,8 +1,14 @@
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
 const { createClient } = require('@supabase/supabase-js');
+
+console.log('🚀 Iniciando servidor...');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('SUPABASE_URL:', process.env.SUPABASE_URL ? '✓' : '✗ FALTA');
+console.log('ANTHROPIC_API_KEY:', process.env.ANTHROPIC_API_KEY ? '✓' : '✗ FALTA');
 
 const app = express();
 app.use(cors());
