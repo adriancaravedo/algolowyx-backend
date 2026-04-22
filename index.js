@@ -146,7 +146,7 @@ Analiza este setup según tu estrategia SMC/ICT y devuelve el JSON completo.`;
 
     // Llamar a Claude
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 1000,
       system: APEX_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userMessage }]
